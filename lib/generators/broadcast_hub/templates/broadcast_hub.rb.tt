@@ -1,0 +1,35 @@
+BroadcastHub.configure do |config|
+  # Allowlist channel resources that clients are permitted to subscribe to.
+  # Add your resource keys here.
+  config.allowed_resources = %w[todo]
+
+  # Required: return true when the connection context can subscribe to
+  # the requested scope. Keep this check strict.
+  config.authorize_scope = lambda do |context|
+    context.current_user.present? || context.session_id.present?
+  end
+
+  # Default stream key keeps publisher and subscriber contexts aligned even when
+  # models do not provide current_user/session_id/tenant_id attributes.
+  #
+  # If your app needs tenant/user/session isolation, customize this resolver.
+  # See examples below.
+  config.stream_key_resolver = lambda do |context|
+    "resource:#{context.resource_name}"
+  end
+
+  # Auth mode example (customize authorize_scope to match your policy):
+  #
+  # config.stream_key_resolver = lambda do |context|
+  #   "tenant:#{context.tenant_id}:#{context.resource_name}:user:#{context.current_user.id}"
+  # end
+
+  # No-auth mode example (for public/session-based channels):
+  #
+  # config.stream_key_resolver = lambda do |context|
+  #   "tenant:#{context.tenant_id}:#{context.resource_name}:session:#{context.session_id}"
+  # end
+end
+
+# For apps without `current_user` in Action Cable, expose a safe `session_id`
+# identifier in ApplicationCable::Connection.

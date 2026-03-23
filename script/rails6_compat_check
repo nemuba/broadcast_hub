@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
+DEFAULT_GEMFILE="$ROOT_DIR/engines/broadcast_hub/gemfiles/rails_6_1.gemfile"
+
+export BUNDLE_GEMFILE="${BUNDLE_GEMFILE:-$DEFAULT_GEMFILE}"
+
+bundle exec ruby -e 'require "rails"; abort("Expected Rails 6.x, got #{Rails.version}") unless Rails::VERSION::MAJOR == 6'
+bundle exec rspec "$ROOT_DIR/spec/engines/broadcast_hub/integration/rails6_smoke_spec.rb" "$@"
