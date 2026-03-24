@@ -1,0 +1,9 @@
+$('turbolinks:load', function() {
+  <% if @todos.any? %>
+    const todos = "<%= j todo_partials 'todo', collection: @todos %>";
+    App.Todo.renderTodos(todos);
+  <% else %>
+    const empty = "<%= j todo_partials 'empty_rows' %>";
+    App.Todo.renderTodos(empty);
+  <% end %>
+});

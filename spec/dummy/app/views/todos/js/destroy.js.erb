@@ -1,0 +1,10 @@
+$('turbolinks:load').ready(function() {
+  <% if @todo.errors.any? %>
+    Alert.add("<%= t('messages.todo.not_destroyed') %>")
+  <% else %>
+    const title = "<%= translate_model(Todo) %>";
+    const message = "<%= t('messages.todo.destroyed') %>";
+    App.Toast.add(title, message);
+  <% end %>
+});
+

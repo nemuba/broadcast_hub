@@ -1,0 +1,8 @@
+<%= form_with(model: todo, remote: true, html: {id: "todo"} ) do |form| %>
+  <%= form.hidden_field :inline_editing, value: true %>
+  <% if field == 'status' %>
+    <%= form.select field, options_for_select(['Sim', 'Não']), { include_blank: 'Selecione' }, class: 'form-control', onchange: "this.form.requestSubmit()" %>
+  <% else %>
+    <%= form.text_field field, class: 'form-control', placeholder: "Search..." %>
+  <% end %>
+<% end %>

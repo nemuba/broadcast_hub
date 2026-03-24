@@ -1,0 +1,28 @@
+<div class="row">
+  <div class="col-md-6">
+    <p class="mt-2">
+      <%= translate_attribute(Todo, header) %>
+    </p>
+  </div>
+  <div class="col-md-6">
+    <div class="dropdown">
+      <button class="btn btn-sm btn-link text-decoration-none mt-2" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="fa fa-arrow-down"></i>
+      </button>
+      <ul class="dropdown-menu">
+        <li>
+          <%= link_to todos_path(sort: header, direction: :asc), class: 'dropdown-item', remote: true do %>
+            <i class="fa fa-angle-up"></i> Crescente
+          <% end %>
+        </li>
+        <li>
+          <%= link_to todos_path(sort: header, direction: :desc), class: 'dropdown-item', remote: true do %>
+            <i class="fa fa-angle-down"></i> Decrescente
+          <% end %>
+        </li>
+      </ul>
+    </div>
+    
+    
+  </div>
+</div>

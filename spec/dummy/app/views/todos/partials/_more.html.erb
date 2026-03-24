@@ -1,0 +1,16 @@
+<tr id="more-todo-<%= todo.id %>">
+  <td colspan="7">
+    <table class="table table-secondary table-responsive table-bordered">
+      <tbody>
+        <tr>
+          <td><%= translate_attribute(Todo, :created_at) %></td>
+          <td><%= translate_attribute(Todo, :updated_at) %></td>
+        </tr>
+        <tr>
+          <td><%= todo.created_at.strftime('%d/%m/%Y') %></td>
+          <td><%= todo.updated_at.strftime('%d/%m/%Y') %></td>
+        </tr>
+      </tbody>
+    </table>
+  </td>
+</tr>

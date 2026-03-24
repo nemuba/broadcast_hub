@@ -1,0 +1,23 @@
+$('turbolinks:load').ready(function() {
+  <% if @todo.errors.any? && @todo.inline_editing == true %>
+    const todo = "<%= j todo_partials 'todo', locals: { todo: @todo.reload } %>";
+    const todoId = "<%= @todo.id %>";
+    App.Todo.update('#todos', todoId, todo);
+    App.Toast.add("<%= @todo.model_name.human %>", "<%= @todo.errors.full_messages.join(', ') %>");
+  <% elsif @todo.errors.any? %>
+    const title = "<%= todo_title_modal(:edit) %>";
+    const form = "<%= j todo_partials 'form', locals: { todo: @todo } %>";
+
+    App.Todo.edit(title, form);
+
+    const render = "<%= j todo_partials 'errors', locals: { todo: @todo } %>";
+    const errors = "<%= @todo.errors.keys.map(&:to_s) %>";
+
+    App.Todo.renderErrors(render, errors);
+  <% else %>
+    const title = "<%= translate_model(Todo) %>";
+    const message = "<%= t('messages.todo.updated') %>";
+    App.Toast.add(title, message);
+  <% end %>
+});
+

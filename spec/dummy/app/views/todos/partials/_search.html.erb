@@ -1,0 +1,7 @@
+<%= form_with( url: todos_path, method: :get, remote: true) do |form| %>
+  <% if field == 'status' %>
+    <%= form.select field, options_for_select(['Sim', 'Não']), { include_blank: 'Selecione' }, class: 'form-control', onchange: "this.form.requestSubmit()" %>
+  <% else %>
+    <%= form.text_field field, class: 'form-control', placeholder: "Search...", onkeyup: "this.form.requestSubmit()" %>
+  <% end %>
+<% end %>

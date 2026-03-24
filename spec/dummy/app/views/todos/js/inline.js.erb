@@ -1,0 +1,8 @@
+$('turbolinks:load', function() {
+  const id = "<%= @todo.id %>";
+  const field = "<%= params[:field] %>";
+  const form = "<%= j todo_partials 'inline', locals: { todo: @todo, field: params[:field] } %>";
+
+  App.Todo.renderInline(Number(id), field, form);
+});
+

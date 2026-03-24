@@ -1,0 +1,7 @@
+$('turbolinks:load').ready(function() {
+  const title = "<%= todo_title_modal(:show) %>";
+  const body = "<%= j todo_partials 'show', locals: { todo: @todo } %>";
+
+  App.Todo.show(title, body);
+});
+

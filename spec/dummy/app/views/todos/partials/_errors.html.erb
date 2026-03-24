@@ -1,0 +1,7 @@
+<h4 class="text-danger"><%= pluralize(todo.errors.count, "erro") %> <%= I18n.t('messages.todo.errors')%>:</h4>
+
+<ul class="list-group mb-3">
+  <% todo.errors.full_messages.each do |message| %>
+    <li class="list-group-item list-group-item-danger"><%= message %></li>
+  <% end %>
+</ul>

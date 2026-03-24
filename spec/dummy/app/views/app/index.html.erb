@@ -1,0 +1,49 @@
+<%= todo_partials 'modal' %>
+
+
+<h1><%= translate_model(Todo) %></h1>
+
+<table 
+  id="todos_datatable"
+  class="table table-striped table-relative table-hover"
+  data-target="#todos"
+  data-url="<%= datatable_todos_path %>">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th><%= todo_partials('sortable', locals: { header: :title }) %></th>
+      <th><%= todo_partials('sortable', locals: { header: :description }) %></th>
+      <th><%= todo_partials('sortable', locals: { header: :status }) %></th>
+      <th colspan="3" class="hidden">Ações</th>
+    </tr>
+    <tr>
+      <td></td>
+      <% ['title','description','status'].each do |column| %>
+        <td>
+          <%= todo_partials 'search', locals: { field: column } %>
+        </td>
+      <% end %>
+      <th colspan="3" class="text-center hidden">
+        <button id="btn-reload" class="btn btn-sm btn-default"><i class="fa fa-refresh"></i></button>
+      </th>
+    </tr>
+  </thead>
+
+  <tbody id="todos" class="table-group-divider">
+  </tbody>
+  <tfoot>
+    <tr>
+      <td colspan="6" id="todos-total">
+        Total de registros: 0
+      </td>
+    </tr>
+  </tfoot>
+</table>
+
+<%= link_new(new_todo_path) %>
+
+<script type="text/javascript">
+  $('turbolinks:load').ready(function() {
+    new App.Datatable('#todos_datatable')
+  });
+</script>

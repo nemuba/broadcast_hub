@@ -1,0 +1,38 @@
+pt-BR:
+  errors:
+    one: "erro"
+    other: "%{count} erros"
+  helpers:
+    links:
+      new: "Nova %{model}"
+      show: "Visualizar"
+      edit: "Editar"
+      confirm_delete: "Excluir"
+    submit:
+      new: "Nova %{model}"
+      create: "Criar %{model}"
+      edit: "Salvar %{model}"
+      close: "Fechar"
+      delete: "Excluir"
+  activerecord:
+    models:
+      todo: Tarefa
+    attributes:
+      todo:
+        title: Título
+        description: Descrição
+        status: Status
+        statuses:
+          pending: Pendente
+          completed: Concluída
+        created_at: Criado em
+        updated_at: Atualizado em
+  messages:
+    todo:
+      created: Tarefa criada com sucesso
+      updated: Tarefa atualizada com sucesso
+      destroyed: Tarefa excluída com sucesso
+      not_destroyed: Tarefa não pode ser excluída
+      errors: impediu que esta tarefa fosse salva
+      delete: "Excluir Tarefa"
+      confirm_delete: "Você tem certeza que deseja excluir esta tarefa ?"

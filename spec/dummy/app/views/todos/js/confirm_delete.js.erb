@@ -1,0 +1,6 @@
+$('turbolinks:load').ready(function() {
+  const title = "<%= todo_title_modal(:delete) %>";
+  const form = "<%= j todo_partials 'confirm_delete', locals: { todo: @todo } %>";
+
+  App.Todo.confirmDelete(title, form);
+});

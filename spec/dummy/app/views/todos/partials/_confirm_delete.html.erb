@@ -1,0 +1,9 @@
+<%= form_with(model: todo, method: :delete, html: { data: { remote: true } }) do |form| %>
+  <div class="modal-body">
+    <p><%= t('messages.todo.confirm_delete') %></p>
+  </div>
+  <div class="modal-footer">
+    <%= close_modal_button('Fechar') %>
+    <%= submit_button(form, delete: true) %>
+  </div>
+<% end %>

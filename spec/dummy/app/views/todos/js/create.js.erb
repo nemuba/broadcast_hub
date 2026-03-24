@@ -1,0 +1,18 @@
+$('turbolinks:load').ready(function() {
+  <% if @todo.errors.any? %>
+    const title = "<%= todo_title_modal(:new) %>";
+    const form = "<%= j todo_partials 'form', locals: { todo: @todo } %>";
+  
+    App.Todo.new(title, form);
+
+    const render = "<%= j todo_partials 'errors', locals: { todo: @todo } %>"; 
+    const errors = "<%= @todo.errors.keys.map(&:to_s) %>";
+
+    App.Todo.renderErrors(render, errors);
+  <% else %>
+    const title = "<%= translate_model(Todo) %>";
+    const message = "<%= t('messages.todo.created') %>";
+    App.Toast.add(title, message);
+  <% end %>
+});
+

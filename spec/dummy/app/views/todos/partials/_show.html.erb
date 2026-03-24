@@ -1,0 +1,19 @@
+<div class="modal-body">
+  <p>
+    <strong><%= translate_attribute(Todo, :title) %>:</strong>
+    <%= todo.title %>
+  </p>
+
+  <p>
+    <strong> <%= translate_attribute(Todo, :description) %>:</strong>
+    <%= todo.description %>
+  </p>
+
+  <p>
+    <strong><%= translate_attribute(Todo, :status) %>:</strong>
+    <%= todo.status ? 'Sim' : 'Não' %>
+  </p>
+</div>
+<div class="modal-footer">
+  <%= close_modal_button('Fechar') %>
+</div>

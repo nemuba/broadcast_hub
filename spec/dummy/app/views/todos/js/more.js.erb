@@ -1,0 +1,5 @@
+$('turbolinks:load', function() {
+  const id = "<%= @todo.id %>";
+  const more = "<%= j todo_partials 'more', locals: { todo: @todo } %>";
+  App.Todo.renderMore(id, more);
+});

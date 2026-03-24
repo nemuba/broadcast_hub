@@ -1,0 +1,36 @@
+<tr id="<%= dom_id(todo, 'todo') %>">
+  <th>
+    <button
+      id="btn-more-todo-<%= todo.id %>"
+      class="btn btn-sm btn-outline-primary"
+      onclick="App.Todo.toggleMore('<%= todo.id %>','<%= more_todo_path(todo.id) %>')"
+    >
+      <i class="fa fa-plus"></i>
+    </button>
+  </th>
+  <td id="todo-title-<%= todo.id %>"><%= link_edit_inline(inline_todo_path(id: todo.id, field: :title), todo.title) %></td>
+  <td id="todo-description-<%= todo.id %>"><%= link_edit_inline(inline_todo_path(id: todo.id, field: :description), todo.description) %></td>
+  <td id="todo-status-<%= todo.id %>"><%= link_edit_inline(inline_todo_path(id: todo.id, field: :status), todo.status ? 'Sim' : 'Não') %></td>
+  <td colspan="3" class="hidden">
+    <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" data-bs-auto-close="true" aria-expanded="false">
+      Ações
+    </button>
+    <ul class="dropdown-menu">
+      <li>
+        <%= link_to todo, class: 'dropdown-item', remote: true do %>
+          <i class="fa fa-eye"></i> Visualizar
+        <% end %>
+      </li>
+      <li>
+        <%= link_to edit_todo_path(todo), class: 'dropdown-item', remote: true do %>
+          <i class="fa fa-pencil"></i> Editar
+        <% end %>
+      </li>
+      <li>
+        <%= link_to confirm_delete_todo_path(todo, format: :js), class: 'dropdown-item', remote: true do %>
+          <i class="fa fa-trash"></i> Excluir
+        <% end %>
+      </li>
+    </ul>
+  </td>
+</tr>
