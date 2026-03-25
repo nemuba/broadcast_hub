@@ -15,7 +15,8 @@ Gem::Specification.new do |spec|
     "homepage_uri"      => "https://github.com/nemuba/broadcast_hub",
     "source_code_uri"   => "https://github.com/nemuba/broadcast_hub",
     "changelog_uri"     => "https://github.com/nemuba/broadcast_hub/blob/main/CHANGELOG.md",
-    "bug_tracker_uri"   => "https://github.com/nemuba/broadcast_hub/issues"
+    "bug_tracker_uri"   => "https://github.com/nemuba/broadcast_hub/issues",
+    "documentation_uri" => "https://rubydoc.info/github/nemuba/broadcast_hub"
   }
 
   spec.files = Dir.chdir(File.expand_path(__dir__)) do
