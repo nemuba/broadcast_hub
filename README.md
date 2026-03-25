@@ -150,13 +150,3 @@ Field meaning:
 - `id`: DOM id used by update/remove fast-path replacement
 - `version`: payload contract version from `BroadcastHub.configuration.payload_version`
 
-## 7) Migration note for legacy `Broadcaster` concern
-
-For apps migrating from a legacy concern (`app/models/concerns/broadcaster.rb`):
-
-1. Disable new usage of the legacy concern first (stop adding `include Broadcaster` to new/changed models).
-2. Move models to `include BroadcastHub::Broadcaster` with explicit `broadcast_to` options.
-3. Keep temporary compatibility shims only while channels/clients are being switched.
-4. Remove the legacy concern and shims after all models and consumers are on BroadcastHub.
-
-This staged approach prevents mixed stream contracts during rollout.
