@@ -19,10 +19,17 @@ Gem::Specification.new do |spec|
   }
 
   spec.files = Dir.chdir(File.expand_path(__dir__)) do
-    Dir['{app,config,lib,vendor}/**/*', 'MIT-LICENSE', 'Rakefile', 'README.md']
+    Dir['{app,config,lib,vendor}/**/*', 'MIT-LICENSE', 'Rakefile', 'README.md', 'CHANGELOG.md', '.yardoc/**/*.rb']
   end
+
+  spec.extra_rdoc_files = [ 'README.md', 'CHANGELOG.md' ]
+  spec.rdoc_options = [ '--title', 'BroadcastHub', '--main', 'README.md', '--line-numbers', '--inline-muted' ]
 
   spec.add_dependency 'jquery-rails'
   spec.add_dependency 'rails', '>= 5.2', '< 7.0'
+
+  spec.add_development_dependency 'yard'
+  spec.add_development_dependency 'redcarpet'
+
   spec.metadata['rubygems_mfa_required'] = 'true'
 end
