@@ -27,6 +27,11 @@
         <% end %>
       </li>
       <li>
+        <%= link_to highlight_todo_path(todo, format: :js), class: 'dropdown-item', remote: true, method: :post do %>
+          <i class="fa fa-bolt"></i> Destacar
+        <% end %>
+      </li>
+      <li>
         <%= link_to confirm_delete_todo_path(todo, format: :js), class: 'dropdown-item', remote: true do %>
           <i class="fa fa-trash"></i> Excluir
         <% end %>
