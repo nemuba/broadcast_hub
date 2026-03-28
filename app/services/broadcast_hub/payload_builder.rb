@@ -6,9 +6,9 @@ module BroadcastHub
     # Raised when payload data is invalid.
     class ValidationError < StandardError; end
 
-    VALID_ACTIONS = %w[append prepend update remove].freeze
+    VALID_ACTIONS = %w[append prepend update remove dispatch].freeze
     ACTIONS_REQUIRING_CONTENT = %w[append prepend update].freeze
-    ALLOWED_KEYS = %i[version action target content id meta].freeze
+    ALLOWED_KEYS = %i[version action target content id meta event_name event_data].freeze
 
     class << self
       # Builds the broadcast payload hash.
@@ -18,12 +18,15 @@ module BroadcastHub
       # @param content [String, nil] rendered HTML for non-remove actions
       # @param id [String] unique entry identifier
       # @param meta [Hash, nil] optional metadata included in the payload
+      # @param event_name [String, nil] for dispatch action
+      # @param event_data [Hash, nil] for dispatch action
       # @return [Hash] payload constrained to {ALLOWED_KEYS}
       # @raise [ValidationError] when any input fails validation
-      def build(action:, target:, content:, id:, meta: {})
+      def build(action:, target:, content:, id:, meta: {}, event_name: nil, event_data: {})
         validate_action!(action)
         validate_target!(target)
         validate_content!(action, content)
+        validate_dispatch!(action, event_name)
 
         payload = {
           version: BroadcastHub.configuration.payload_version,
@@ -31,13 +34,23 @@ module BroadcastHub
           target: target,
           content: content,
           id: id,
-          meta: normalize_meta(meta)
+          meta: normalize_meta(meta),
+          event_name: event_name,
+          event_data: event_data
         }
 
         payload.slice(*ALLOWED_KEYS)
       end
 
       private
+
+      # @param action [String]
+      # @param event_name [String, nil]
+      # @raise [ValidationError]
+      def validate_dispatch!(action, event_name)
+        return unless action == "dispatch"
+        raise ValidationError, "event_name required for dispatch" if event_name.to_s.strip.empty?
+      end
 
       # @param action [String]
       # @raise [ValidationError]
