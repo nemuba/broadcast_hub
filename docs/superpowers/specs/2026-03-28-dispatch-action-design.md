@@ -36,13 +36,14 @@ Example payload:
 #### `BroadcastHub::Broadcaster`
 - Add `broadcast_dispatch(target, event_name, event_data = {})` method.
 - Update `broadcast_action` to handle `dispatch` and pass `event_name`/`event_data`.
+- Optimize `broadcast_action` to skip content rendering for `dispatch` actions (similar to `remove`).
 
 ### 3.3. Frontend (JavaScript)
 
 #### `BroadcastHubJQueryController`
 - Add `dispatch` case to the `switch` in `apply(payload)`.
 - Use `this.$(targetSelector).trigger(payload.event_name, [payload.event_data])`.
-- Update `_isValidPayload` to check `event_name` for `dispatch` actions.
+- Update `_isValidPayload` to check `event_name` for `dispatch` actions. This will require passing `event_name` to the validation method.
 
 ## 4. Error Handling
 - Invalid `event_name` will trigger the standard `_warnInvalidPayload` in development.
