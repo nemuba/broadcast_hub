@@ -27,7 +27,7 @@
         <% end %>
       </li>
       <li>
-        <%= link_to highlight_todo_path(todo, format: :js), class: 'dropdown-item', remote: true, method: :post do %>
+        <%= button_to highlight_todo_path(todo, format: :js), method: :post, remote: true, form: { class: 'd-inline w-100' }, class: 'dropdown-item btn btn-link border-0 bg-transparent text-start w-100' do %>
           <i class="fa fa-bolt"></i> Destacar
         <% end %>
       </li>
