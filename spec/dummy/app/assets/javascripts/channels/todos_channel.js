@@ -91,10 +91,64 @@
 
     this.$(rowElement).addClass('todo-row-highlight');
 
+    var highlightDuration = this._resolveHighlightDuration(rowElement);
+
     this._rowHighlightTimers[rowId] = setTimeout(function () {
       this.$(rowElement).removeClass('todo-row-highlight');
       delete this._rowHighlightTimers[rowId];
-    }.bind(this), 1200);
+    }.bind(this), highlightDuration);
+  };
+
+  TodoBroadcastController.prototype._resolveHighlightDuration = function (rowElement) {
+    var fallbackDuration = 1200;
+
+    if (!rowElement || !global.getComputedStyle) {
+      return fallbackDuration;
+    }
+
+    var computedStyle = global.getComputedStyle(rowElement);
+
+    if (!computedStyle || !computedStyle.getPropertyValue) {
+      return fallbackDuration;
+    }
+
+    var parsedDuration = this._parseDurationMs(computedStyle.getPropertyValue('--todo-highlight-duration'));
+
+    if (parsedDuration === null) {
+      return fallbackDuration;
+    }
+
+    return parsedDuration;
+  };
+
+  TodoBroadcastController.prototype._parseDurationMs = function (durationValue) {
+    if (typeof durationValue !== 'string') {
+      return null;
+    }
+
+    var trimmedDuration = durationValue.trim();
+
+    if (trimmedDuration.length === 0) {
+      return null;
+    }
+
+    var numericDuration;
+
+    if (/^-?\d*\.?\d+ms$/i.test(trimmedDuration)) {
+      numericDuration = parseFloat(trimmedDuration);
+    } else if (/^-?\d*\.?\d+s$/i.test(trimmedDuration)) {
+      numericDuration = parseFloat(trimmedDuration) * 1000;
+    } else if (/^-?\d*\.?\d+$/.test(trimmedDuration)) {
+      numericDuration = parseFloat(trimmedDuration);
+    } else {
+      return null;
+    }
+
+    if (isNaN(numericDuration) || numericDuration < 0) {
+      return null;
+    }
+
+    return numericDuration;
   };
 
   function wireTodoChannel(consumer, $) {

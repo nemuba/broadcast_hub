@@ -1,4 +1,9 @@
 .todo-row-highlight {
+  --todo-highlight-duration: 1200ms;
+}
+
+.todo-row-highlight > td,
+.todo-row-highlight > th {
   background-color: #fff3cd;
-  transition: background-color 1.2s ease;
+  transition: background-color var(--todo-highlight-duration) ease;
 }
