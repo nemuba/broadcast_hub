@@ -7,7 +7,7 @@ BroadcastHub is a reusable Action Cable broadcasting layer for Rails 5/6 apps th
 - Rails engine (`broadcast_hub`) scoped to Rails `>= 5.2`, `< 7.0`
 - Server concern (`BroadcastHub::Broadcaster`) for model callbacks and payload publishing
 - Generic Action Cable channel (`BroadcastHub::StreamChannel`) with authorization and stream key resolution
-- Browser helpers (`BroadcastHub.Subscription` and `BroadcastHub.JQueryController`) for applying append/prepend/update/remove actions
+- Browser helpers (`BroadcastHub.Subscription` and `BroadcastHub.JQueryController`) for applying append/prepend/update/remove/dispatch actions
 
 BroadcastHub is designed to work without `turbo-rails`.
 
@@ -138,15 +138,18 @@ Payloads emitted by `BroadcastHub::PayloadBuilder` follow this shape:
   "action": "append",
   "target": "#todos",
   "content": "<div id=\"todo_1\">...</div>",
-  "id": "todo_1"
+  "id": "todo_1",
+  "event_name": null,
+  "event_data": null
 }
 ```
 
 Field meaning:
 
-- `action`: one of `append`, `prepend`, `update`, `remove`
-- `target`: CSS selector used as insertion/update/remove target
-- `content`: rendered HTML for append/prepend/update (typically `null` on remove)
+- `action`: one of `append`, `prepend`, `update`, `remove`, `dispatch`
+- `target`: CSS selector used as insertion/update/remove/dispatch target
+- `content`: rendered HTML for append/prepend/update (typically `null` on remove/dispatch)
 - `id`: DOM id used by update/remove fast-path replacement
+- `event_name`: required when `action` is `dispatch`; event name passed to jQuery `trigger`
+- `event_data`: optional hash payload for `dispatch`; delivered as trigger argument data
 - `version`: payload contract version from `BroadcastHub.configuration.payload_version`
-
