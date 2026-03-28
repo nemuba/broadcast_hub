@@ -2,7 +2,7 @@
 
 # TodosController
 class TodosController < ApplicationController
-  before_action :set_todo, only: %i[show edit update destroy confirm_delete inline more]
+  before_action :set_todo, only: %i[show edit update destroy confirm_delete highlight inline more]
   before_action :instance_todo, only: %i[create]
 
   # GET /todos or /todos.json
@@ -91,6 +91,19 @@ class TodosController < ApplicationController
   def inline
     respond_to do |format|
       format.js { render 'todos/js/inline' }
+    end
+  end
+
+  def highlight
+    @todo.broadcast_dispatch(
+      "##{ActionView::RecordIdentifier.dom_id(@todo, 'todo')}",
+      'todo:highlight',
+      { id: @todo.id, title: @todo.title }
+    )
+
+    respond_to do |format|
+      format.js { head :ok }
+      format.json { head :ok }
     end
   end
 

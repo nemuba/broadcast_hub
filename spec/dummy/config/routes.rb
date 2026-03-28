@@ -5,6 +5,7 @@ Rails.application.routes.draw do
   root "app#index"
   resources :todos do
     get "confirm_delete", on: :member
+    post "highlight", on: :member
     get "inline", on: :member
     get "more", on: :member
     get "datatable", on: :collection
