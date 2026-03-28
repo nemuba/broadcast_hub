@@ -1,9 +1,10 @@
 .todo-row-highlight {
   --todo-highlight-duration: 1200ms;
+  --bs-table-bg: #fff3cd;
 }
 
-.todo-row-highlight > td,
-.todo-row-highlight > th {
-  background-color: #fff3cd;
+.table .todo-row-highlight > td,
+.table .todo-row-highlight > th {
+  background-color: var(--bs-table-bg) !important;
   transition: background-color var(--todo-highlight-duration) ease;
 }

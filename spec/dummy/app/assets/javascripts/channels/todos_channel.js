@@ -161,7 +161,7 @@
   global.TodoChannel = global.TodoChannel || {};
   global.TodoChannel.wire = wireTodoChannel;
 
-  if (global.App && global.App.cable && global.jQuery) {
+  if (global.App && global.App.cable && global.jQuery && !global.App.todo_channel) {
     global.App.todo_channel = wireTodoChannel(global.App.cable, global.jQuery);
   }
 })(this);
