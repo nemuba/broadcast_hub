@@ -96,7 +96,7 @@ class TodosController < ApplicationController
 
   def highlight
     @todo.broadcast_dispatch(
-      "##{ActionView::RecordIdentifier.dom_id(@todo, 'todo')}",
+      "##{ActionView::RecordIdentifier.dom_id(@todo)}",
       'todo:highlight',
       { id: @todo.id, title: @todo.title }
     )
