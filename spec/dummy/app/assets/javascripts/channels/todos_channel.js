@@ -2,6 +2,8 @@
   function TodoBroadcastController($) {
     this.$ = $;
     this.base = new BroadcastHubJQueryController($);
+    this._rowHighlightTimers = {};
+    this._bindHighlightListener();
   }
 
   TodoBroadcastController.prototype.apply = function (payload) {
@@ -62,7 +64,35 @@
     } else {
       $emptyRows.hide();
     }
-  }
+  };
+
+  TodoBroadcastController.prototype._bindHighlightListener = function () {
+    var self = this;
+
+    this.$(document).on('todo:highlight', 'tr[id^="todo_"]', function (event) {
+      self._flashRow(event.currentTarget);
+    });
+  };
+
+  TodoBroadcastController.prototype._flashRow = function (rowElement) {
+    if (!rowElement || !rowElement.id) {
+      return;
+    }
+
+    var rowId = rowElement.id;
+    var activeTimer = this._rowHighlightTimers[rowId];
+
+    if (activeTimer) {
+      clearTimeout(activeTimer);
+    }
+
+    this.$(rowElement).addClass('todo-row-highlight');
+
+    this._rowHighlightTimers[rowId] = setTimeout(function () {
+      this.$(rowElement).removeClass('todo-row-highlight');
+      delete this._rowHighlightTimers[rowId];
+    }.bind(this), 1200);
+  };
 
   function wireTodoChannel(consumer, $) {
     var controller = new TodoBroadcastController($);
