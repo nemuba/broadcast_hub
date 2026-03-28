@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-03-28
+
+### Added
+- New `dispatch` broadcast action to trigger client-side custom events with `event_name` and `event_data` payload fields.
+
 ## [0.1.0] - 2026-03-24
 
 ### Added
