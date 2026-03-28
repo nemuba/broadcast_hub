@@ -26,25 +26,28 @@ RSpec.describe 'BroadcastHub dispatch flow', type: :model do
     allow(ActionCable.server).to receive(:broadcast)
 
     user = create(:user)
-    todo = create(:todo, :with_user, user_id: user.id)
+    todo = create(:todo, user_id: user.id)
     event_name = 'todo:highlight'
     event_data = { todo_id: todo.id, urgent: true }
+
+    expect(ActionCable.server).to receive(:broadcast).with(
+      "resource:todo:user:#{user.id}",
+      {
+        version: 1,
+        action: 'dispatch',
+        target: '#todos',
+        content: nil,
+        id: "todo_#{todo.id}",
+        meta: {},
+        event_name: event_name,
+        event_data: event_data
+      }
+    ).once
 
     todo.broadcast_dispatch('#todos', event_name, event_data)
 
     expect(captured_context).to be_a(BroadcastHub::StreamKeyContext)
     expect(captured_context.resource_name).to eq('todo')
     expect(captured_context.current_user).to eq(user)
-
-    expect(ActionCable.server).to have_received(:broadcast).with(
-      "resource:todo:user:#{user.id}",
-      hash_including(
-        action: 'dispatch',
-        target: '#todos',
-        event_name: event_name,
-        event_data: event_data,
-        id: "todo_#{todo.id}"
-      )
-    )
   end
 end
