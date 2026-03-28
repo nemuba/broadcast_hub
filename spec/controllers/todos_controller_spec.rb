@@ -10,8 +10,7 @@ RSpec.describe TodosController, type: :controller do
 
       allow(controller).to receive(:authenticate_user!).and_return(true)
       allow(controller).to receive(:current_user).and_return(user)
-      allow(controller).to receive(:set_todo) { controller.instance_variable_set(:@todo, todo) }
-      expect(todo).to receive(:broadcast_dispatch).with(
+      expect_any_instance_of(Todo).to receive(:broadcast_dispatch).with(
         "#todo_#{todo.id}",
         'todo:highlight',
         { id: todo.id, title: todo.title }
