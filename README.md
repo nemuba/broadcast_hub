@@ -130,7 +130,7 @@ Basic subscription wiring (compatible with this repo style):
 
 ## 6) Payload contract
 
-Payloads emitted by `BroadcastHub::PayloadBuilder` follow this shape:
+Payloads emitted by `BroadcastHub::PayloadBuilder` follow this contract:
 
 ```json
 {
@@ -139,8 +139,22 @@ Payloads emitted by `BroadcastHub::PayloadBuilder` follow this shape:
   "target": "#todos",
   "content": "<div id=\"todo_1\">...</div>",
   "id": "todo_1",
-  "event_name": null,
-  "event_data": null
+  "meta": {}
+}
+```
+
+Dispatch actions extend this payload with event fields:
+
+```json
+{
+  "version": 1,
+  "action": "dispatch",
+  "target": "#todos",
+  "content": null,
+  "id": "todo_1",
+  "meta": {},
+  "event_name": "todo:highlight",
+  "event_data": { "id": "todo_1" }
 }
 ```
 
@@ -150,6 +164,12 @@ Field meaning:
 - `target`: CSS selector used as insertion/update/remove/dispatch target
 - `content`: rendered HTML for append/prepend/update (typically `null` on remove/dispatch)
 - `id`: DOM id used by update/remove fast-path replacement
+- `meta`: optional metadata hash (defaults to `{}`)
 - `event_name`: required when `action` is `dispatch`; event name passed to jQuery `trigger`
 - `event_data`: optional hash payload for `dispatch`; delivered as trigger argument data
 - `version`: payload contract version from `BroadcastHub.configuration.payload_version`
+
+Dispatch-specific notes:
+
+- `event_name` and `event_data` are included only when `action` is `dispatch`
+- `event_data` must be a hash when provided
