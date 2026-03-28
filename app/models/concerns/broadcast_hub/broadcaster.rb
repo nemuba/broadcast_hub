@@ -37,6 +37,16 @@ module BroadcastHub
       broadcast_action("remove", target)
     end
 
+    # Broadcasts a dispatch action for the model instance.
+    #
+    # @param target [String] DOM target for event dispatch
+    # @param event_name [String] event name to dispatch
+    # @param event_data [Hash] event payload data
+    # @return [void]
+    def broadcast_dispatch(target, event_name, event_data = {})
+      broadcast_action("dispatch", target, event_name: event_name, event_data: event_data)
+    end
+
     class_methods do
       # Configures callbacks and rendering metadata for model broadcasts.
       #
@@ -61,15 +71,19 @@ module BroadcastHub
     #
     # @param action [String] payload action
     # @param target [String] DOM target
+    # @param event_name [String, nil] event name for dispatch action
+    # @param event_data [Hash] event payload data for dispatch action
     # @return [void]
-    def broadcast_action(action, target)
-      content = action == "remove" ? nil : render_broadcast_content
+    def broadcast_action(action, target, event_name: nil, event_data: {})
+      content = %w[remove dispatch].include?(action) ? nil : render_broadcast_content
       payload = BroadcastHub::PayloadBuilder.build(
         action: action,
         target: target,
         content: content,
         id: broadcast_hub_dom_id,
-        meta: {}
+        meta: {},
+        event_name: event_name,
+        event_data: event_data
       )
 
       ActionCable.server.broadcast(broadcast_hub_stream_key, payload)

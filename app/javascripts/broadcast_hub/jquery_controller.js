@@ -13,8 +13,10 @@ export default class BroadcastHubJQueryController {
     const targetSelector = payload && payload.target;
     const content = payload && payload.content;
     const id = payload && payload.id;
+    const eventName = payload && payload.event_name;
+    const eventData = payload && payload.event_data;
 
-    if (!this._isValidPayload(action, targetSelector, content)) {
+    if (!this._isValidPayload(action, targetSelector, content, eventName)) {
       this._warnInvalidPayload();
       return;
     }
@@ -44,17 +46,24 @@ export default class BroadcastHubJQueryController {
           }
         }
         return;
+      case 'dispatch':
+        $target.trigger(eventName, [eventData]);
+        return;
       default:
         this._warnInvalidPayload();
     }
   }
 
-  _isValidPayload(action, targetSelector, content) {
+  _isValidPayload(action, targetSelector, content, eventName) {
     if (isBlank(action) || isBlank(targetSelector)) {
       return false;
     }
 
     if ((action === 'append' || action === 'prepend' || action === 'update') && isBlank(content)) {
+      return false;
+    }
+
+    if (action === 'dispatch' && isBlank(eventName)) {
       return false;
     }
 

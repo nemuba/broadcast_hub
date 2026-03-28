@@ -25,8 +25,9 @@ module BroadcastHub
       def build(action:, target:, content:, id:, meta: {}, event_name: nil, event_data: {})
         validate_action!(action)
         validate_target!(target)
+        validate_id!(id)
         validate_content!(action, content)
-        validate_dispatch!(action, event_name)
+        validate_dispatch!(action, event_name, event_data)
 
         payload = {
           version: BroadcastHub.configuration.payload_version,
@@ -34,10 +35,13 @@ module BroadcastHub
           target: target,
           content: content,
           id: id,
-          meta: normalize_meta(meta),
-          event_name: event_name,
-          event_data: event_data
+          meta: normalize_meta(meta)
         }
+
+        if action == "dispatch"
+          payload[:event_name] = event_name
+          payload[:event_data] = event_data
+        end
 
         payload.slice(*ALLOWED_KEYS)
       end
@@ -46,10 +50,13 @@ module BroadcastHub
 
       # @param action [String]
       # @param event_name [String, nil]
+      # @param event_data [Hash, nil]
       # @raise [ValidationError]
-      def validate_dispatch!(action, event_name)
+      def validate_dispatch!(action, event_name, event_data)
         return unless action == "dispatch"
+
         raise ValidationError, "event_name required for dispatch" if event_name.to_s.strip.empty?
+        raise ValidationError, "event_data must be a hash for dispatch" unless event_data.is_a?(Hash)
       end
 
       # @param action [String]
@@ -62,6 +69,12 @@ module BroadcastHub
       # @raise [ValidationError]
       def validate_target!(target)
         raise ValidationError, "target required" if target.to_s.strip.empty?
+      end
+
+      # @param id [String]
+      # @raise [ValidationError]
+      def validate_id!(id)
+        raise ValidationError, "id required" if id.to_s.strip.empty?
       end
 
       # @param action [String]
