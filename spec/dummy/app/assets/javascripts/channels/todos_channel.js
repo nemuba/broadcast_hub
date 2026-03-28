@@ -68,10 +68,13 @@
 
   TodoBroadcastController.prototype._bindHighlightListener = function () {
     var self = this;
+    var $document = this.$(document);
 
-    this.$(document).on('todo:highlight', 'tr[id^="todo_"]', function (event) {
-      self._flashRow(event.currentTarget);
-    });
+    $document
+      .off('todo:highlight.todoChannel')
+      .on('todo:highlight.todoChannel', 'tr[id^="todo_"]', function (event) {
+        self._flashRow(event.currentTarget);
+      });
   };
 
   TodoBroadcastController.prototype._flashRow = function (rowElement) {
