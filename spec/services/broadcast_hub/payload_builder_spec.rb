@@ -71,6 +71,12 @@ RSpec.describe BroadcastHub::PayloadBuilder do
         }.to raise_error(BroadcastHub::PayloadBuilder::ValidationError, 'content required')
       end
 
+      it 'raises error for blank id' do
+        expect {
+          described_class.build(action: 'append', target: target, content: content, id: ' ')
+        }.to raise_error(BroadcastHub::PayloadBuilder::ValidationError, 'id required')
+      end
+
       it 'raises error if meta is not a hash' do
         expect {
           described_class.build(action: 'append', target: target, content: content, id: id, meta: 'invalid')
@@ -112,6 +118,19 @@ RSpec.describe BroadcastHub::PayloadBuilder do
         }.to raise_error(BroadcastHub::PayloadBuilder::ValidationError, 'event_name required for dispatch')
       end
 
+      it 'raises error if event_data is not a hash for dispatch' do
+        expect {
+          described_class.build(
+            action: 'dispatch',
+            target: target,
+            content: nil,
+            id: id,
+            event_name: event_name,
+            event_data: 'invalid'
+          )
+        }.to raise_error(BroadcastHub::PayloadBuilder::ValidationError, 'event_data must be a hash for dispatch')
+      end
+
       it 'does not require content for dispatch' do
         expect {
           described_class.build(
@@ -122,6 +141,20 @@ RSpec.describe BroadcastHub::PayloadBuilder do
             event_name: event_name
           )
         }.not_to raise_error
+      end
+
+      it 'does not include dispatch keys for non-dispatch payloads' do
+        payload = described_class.build(
+          action: 'append',
+          target: target,
+          content: content,
+          id: id,
+          event_name: 'ignored',
+          event_data: { ignored: true }
+        )
+
+        expect(payload).not_to have_key(:event_name)
+        expect(payload).not_to have_key(:event_data)
       end
     end
   end
