@@ -101,7 +101,43 @@ def broadcast_hub_stream_key_context_attributes
 end
 ```
 
-## 5) Client-side integration (Sprockets)
+## 5) Controller helper integration
+
+For controller-triggered realtime updates (for example action-specific highlight/flash events), use `render_broadcast`.
+
+```ruby
+class TodosController < ApplicationController
+  def highlight
+    respond_to do |format|
+      format.js { broadcast_todo_highlight }
+      format.json { broadcast_todo_highlight }
+    end
+  end
+
+  private
+
+  def broadcast_todo_highlight
+    render_broadcast(
+      action: 'dispatch',
+      target: "#todo_#{params[:id]}",
+      resource: 'todo',
+      event_name: 'todo:highlight',
+      event_data: { id: params[:id] }
+    )
+  end
+end
+```
+
+`render_broadcast` options:
+
+- Required: `action`, `target`, `resource`
+- For `append|prepend|update`: `partial` is required
+- For `remove|dispatch`: `content` is forced to `nil`
+- For `dispatch`: `event_name` is required and `event_data` must be a hash when provided
+- `id` defaults to a generated UUID when omitted
+- Stream authorization/identity is resolved through `BroadcastHub::StreamKeyResolver.resolve!` using `BroadcastHub::StreamKeyContext`
+
+## 6) Client-side integration (Sprockets)
 
 Require BroadcastHub in `app/assets/javascripts/application.js`:
 
@@ -128,7 +164,7 @@ Basic subscription wiring (compatible with this repo style):
 
 `BroadcastHubSubscription` sends `{ channel: 'BroadcastHub::StreamChannel', resource: 'todo' }` and the controller applies incoming payloads to the DOM.
 
-## 6) Payload contract
+## 7) Payload contract
 
 Payloads emitted by `BroadcastHub::PayloadBuilder` follow this contract:
 

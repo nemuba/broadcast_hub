@@ -95,15 +95,9 @@ class TodosController < ApplicationController
   end
 
   def highlight
-    @todo.broadcast_dispatch(
-      "##{ActionView::RecordIdentifier.dom_id(@todo)}",
-      'todo:highlight',
-      { id: @todo.id, title: @todo.title }
-    )
-
     respond_to do |format|
-      format.js { head :ok }
-      format.json { head :ok }
+      format.js { broadcast_todo_highlight }
+      format.json { broadcast_todo_highlight }
     end
   end
 
@@ -121,5 +115,15 @@ class TodosController < ApplicationController
   # Only allow a list of trusted parameters through.
   def todo_params
     params.require(:todo).permit(:title, :description, :status, :inline_editing)
+  end
+
+  def broadcast_todo_highlight
+    render_broadcast(
+      action: 'dispatch',
+      target: "##{ActionView::RecordIdentifier.dom_id(@todo)}",
+      resource: 'todo',
+      event_name: 'todo:highlight',
+      event_data: { id: @todo.id, title: @todo.title }
+    )
   end
 end

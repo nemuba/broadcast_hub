@@ -4,21 +4,72 @@ require 'rails_helper'
 
 RSpec.describe TodosController, type: :controller do
   describe 'POST #highlight' do
-    it 'dispatches highlight event to the todo row dom id' do
+    it 'broadcasts a dispatch payload for highlighting the todo row in js format' do
       user = create(:user)
       todo = create(:todo, user_id: user.id)
 
       allow(controller).to receive(:authenticate_user!).and_return(true)
       allow(controller).to receive(:current_user).and_return(user)
       expected_target = "##{ActionView::RecordIdentifier.dom_id(todo)}"
+      expected_stream_key = "resource:todo:user:#{user.id}"
 
-      expect_any_instance_of(Todo).to receive(:broadcast_dispatch).with(
-        expected_target,
-        'todo:highlight',
-        { id: todo.id, title: todo.title }
+      allow(SecureRandom).to receive(:uuid).and_return('uuid-highlight')
+      expect(ActionCable.server).to receive(:broadcast).with(
+        expected_stream_key,
+        hash_including(
+          action: 'dispatch',
+          target: expected_target,
+          content: nil,
+          id: 'uuid-highlight',
+          event_name: 'todo:highlight',
+          event_data: { id: todo.id, title: todo.title }
+        )
       )
 
       post :highlight, params: { id: todo.id }, format: :js
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to be_empty
+    end
+
+    it 'broadcasts a dispatch payload for highlighting the todo row in json format' do
+      user = create(:user)
+      todo = create(:todo, user_id: user.id)
+
+      allow(controller).to receive(:authenticate_user!).and_return(true)
+      allow(controller).to receive(:current_user).and_return(user)
+      expected_target = "##{ActionView::RecordIdentifier.dom_id(todo)}"
+      expected_stream_key = "resource:todo:user:#{user.id}"
+
+      allow(SecureRandom).to receive(:uuid).and_return('uuid-highlight-json')
+      expect(ActionCable.server).to receive(:broadcast).with(
+        expected_stream_key,
+        hash_including(
+          action: 'dispatch',
+          target: expected_target,
+          content: nil,
+          id: 'uuid-highlight-json',
+          event_name: 'todo:highlight',
+          event_data: { id: todo.id, title: todo.title }
+        )
+      )
+
+      post :highlight, params: { id: todo.id }, format: :json
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to be_empty
+    end
+
+    it 'rejects unsupported formats' do
+      user = create(:user)
+      todo = create(:todo, user_id: user.id)
+
+      allow(controller).to receive(:authenticate_user!).and_return(true)
+      allow(controller).to receive(:current_user).and_return(user)
+
+      expect do
+        post :highlight, params: { id: todo.id }, format: :html
+      end.to raise_error(ActionController::UnknownFormat)
     end
   end
 
