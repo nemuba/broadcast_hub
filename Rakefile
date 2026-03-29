@@ -14,7 +14,7 @@ end
 begin
   require 'yard'
   YARD::Rake::YardocTask.new do |t|
-    t.options = ['--no-output']
+    t.options = [ '--no-output' ]
   end
 rescue LoadError
 end

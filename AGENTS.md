@@ -4,6 +4,19 @@ This document provides instructions for agentic coding tools (such as yourself) 
 
 ---
 
+## 0. Memory-First Planning Gate
+
+Before starting any planning activity (including implementation plans, refactor plans, debugging plans, or task breakdowns), the agent must execute this pre-flight sequence:
+
+1. Read the current conversation memory block (`[MEMORY]`) in full.
+2. Run a focused memory lookup (`memory.search`) using terms from the user request (feature names, file paths, issue IDs, and domain keywords).
+3. Produce a short "Relevant Memory" summary in the response before presenting the plan.
+4. If no relevant memory is found, explicitly state "No relevant memory found" and proceed with planning.
+
+Planning must not start until this sequence is completed.
+
+---
+
 ## 1. Commands & Environment
 
 BroadcastHub is a Ruby on Rails engine gem. Commands are executed from the repository root.
