@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [0.2.2] - 2026-03-29
+
+### Added
+- New engine helper `dom_id(record, positional_prefix = nil, prefix: nil, suffix: nil)` available in controller and view contexts.
+- Contract and exposure specs covering positional Rails compatibility, keyword wrappers, normalization rules, and host dummy app integration.
+
+### Changed
+- Dummy app helper no longer overrides `dom_id`, ensuring engine-provided behavior is exercised.
+- README now documents `dom_id` usage with controller/view examples and conflict semantics.
+
 ## [0.2.1] - 2026-03-29
 
 ### Added
