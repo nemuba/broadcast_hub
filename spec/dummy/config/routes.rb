@@ -6,6 +6,7 @@ Rails.application.routes.draw do
   resources :todos do
     get "confirm_delete", on: :member
     post "highlight", on: :member
+    get "dom_id_probe", on: :member
     get "inline", on: :member
     get "more", on: :member
     get "datatable", on: :collection

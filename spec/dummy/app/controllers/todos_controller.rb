@@ -101,6 +101,11 @@ class TodosController < ApplicationController
     end
   end
 
+  def dom_id_probe
+    @todo = current_user.todos.find(params[:id])
+    render plain: dom_id(@todo, prefix: 'row', suffix: 'flash')
+  end
+
   private
 
   # Use callbacks to share common setup or constraints between actions.
@@ -120,7 +125,7 @@ class TodosController < ApplicationController
   def broadcast_todo_highlight
     render_broadcast(
       action: 'dispatch',
-      target: "##{ActionView::RecordIdentifier.dom_id(@todo)}",
+      target: "##{dom_id(@todo)}",
       resource: 'todo',
       event_name: 'todo:highlight',
       event_data: { id: @todo.id, title: @todo.title }

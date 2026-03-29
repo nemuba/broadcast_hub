@@ -105,6 +105,16 @@ end
 
 For controller-triggered realtime updates (for example action-specific highlight/flash events), use `render_broadcast`.
 
+BroadcastHub also exposes `dom_id(record, positional_prefix = nil, prefix: nil, suffix: nil)` in both controllers and views.
+
+- `dom_id(todo)` -> `todo_1`
+- `dom_id(todo, :edit)` -> `edit_todo_1`
+- `dom_id(todo, prefix: 'row')` -> `row_todo_1`
+- `dom_id(todo, suffix: 'highlight')` -> `todo_1_highlight`
+- `dom_id(todo, prefix: 'row', suffix: 'highlight')` -> `row_todo_1_highlight`
+
+If both positional prefix and keyword `prefix` are provided, `dom_id` raises `ArgumentError`.
+
 ```ruby
 class TodosController < ApplicationController
   def highlight
@@ -119,13 +129,21 @@ class TodosController < ApplicationController
   def broadcast_todo_highlight
     render_broadcast(
       action: 'dispatch',
-      target: "#todo_#{params[:id]}",
+      target: "##{dom_id(current_user.todos.find(params[:id]), prefix: 'row', suffix: 'flash')}",
       resource: 'todo',
       event_name: 'todo:highlight',
       event_data: { id: params[:id] }
     )
   end
 end
+```
+
+View usage example:
+
+```erb
+<tr id="<%= dom_id(@todo, prefix: 'row', suffix: 'flash') %>">
+  <td><%= @todo.title %></td>
+</tr>
 ```
 
 `render_broadcast` options:
