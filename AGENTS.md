@@ -21,6 +21,7 @@ BroadcastHub is a Ruby on Rails engine gem. Commands are executed from the repos
 - **Run specific line**: `bundle exec rspec spec/models/concerns/broadcast_hub/broadcaster_spec.rb:45`
 - **Run JavaScript controller specs**: `bundle exec rspec spec/javascripts/broadcast_hub/jquery_controller_spec.rb`
 - **Run integration dispatch flow**: `bundle exec rspec spec/integration/broadcast_hub/dispatch_flow_spec.rb`
+- **Run controller helper specs**: `bundle exec rspec spec/controllers/broadcast_hub/controller_helpers_spec.rb`
 - **Fail fast**: `bundle exec rspec --fail-fast`
 
 ### Linting & Formatting (RuboCop)
@@ -58,6 +59,7 @@ BroadcastHub follows the **RuboCop Rails Omakase** house style.
 - `app/channels/`: Action Cable channel logic.
 - `app/services/`: Stateless logic and business rules.
 - `app/models/concerns/`: Reusable model behaviors.
+- `app/controllers/concerns/`: Reusable controller behaviors (for example `BroadcastHub::ControllerHelpers`).
 - `lib/broadcast_hub/`: Engine core configuration and versioning.
 
 ---
@@ -109,6 +111,14 @@ Notes:
 
 - **Stream Key Resolution**: Always use the configured `stream_key_resolver` via `BroadcastHub.configuration`.
 - **Authorization**: Subscription logic must check `authorize_scope` before establishing streams.
+
+### Controller Helper (`render_broadcast`)
+
+- Use `render_broadcast` for controller-triggered broadcast actions.
+- Always provide `action`, `target`, and `resource`.
+- For `append|prepend|update`, `partial` is required.
+- For `remove|dispatch`, `content` must remain `nil`.
+- Keep controller response format contracts explicit (e.g. `respond_to` with supported formats only).
 
 ### Testing Strategy
 

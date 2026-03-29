@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-03-29
+
+### Added
+- New controller helper `render_broadcast` for emitting append/prepend/update/remove/dispatch payloads directly from controllers.
+- Controller helper docs in README, including usage examples and option semantics.
+- Controller-level specs for helper orchestration, action validation, payload versioning, and stream authorization propagation.
+
+### Changed
+- Dummy app `TodosController#highlight` now uses `render_broadcast` with `dispatch` payloads while keeping explicit `js/json` format handling.
+- `TodosController` specs now assert ActionCable dispatch payload behavior instead of model-level `broadcast_dispatch` coupling.
+
 ## [0.2.0] - 2026-03-28
 
 ### Added

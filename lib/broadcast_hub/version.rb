@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module BroadcastHub
-  VERSION = "0.2.0"
+  VERSION = "0.2.1"
 
   class Version
     def self.to_s

@@ -16,7 +16,7 @@ BroadcastHub is designed to work without `turbo-rails`.
 Add the engine gem to the host app `Gemfile`:
 
 ```ruby
-gem 'broadcast_hub', '~> 0.1.1'
+gem 'broadcast_hub', '~> 0.2.1'
 ```
 
 Install dependencies, then generate the initializer template:
