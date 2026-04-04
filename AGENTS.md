@@ -1,155 +1,146 @@
 # AGENTS.md - BroadcastHub Development Guide
-
-This document provides instructions for agentic coding tools (such as yourself) operating in the `broadcast_hub` repository. Adhere strictly to these guidelines to maintain consistency with the existing architecture.
-
----
+This guide is for coding agents working in `broadcast_hub`.
+BroadcastHub is a Rails engine gem for Action Cable payload broadcasting.
 
 ## 0. Memory-First Planning Gate
+Before any planning activity (implementation/debug/refactor plans), run this sequence:
+1. Read the current `[MEMORY]` block fully.
+2. Run `memory.search` with request-specific terms (feature names, paths, issue IDs, domain words).
+3. Output a short `Relevant Memory` summary before the plan.
+4. If nothing relevant is found, write exactly: `No relevant memory found`.
+Do not start planning before this gate is complete.
 
-Before starting any planning activity (including implementation plans, refactor plans, debugging plans, or task breakdowns), the agent must execute this pre-flight sequence:
+## 1. Build, Lint, and Test Commands
+Run commands from repository root.
 
-1. Read the current conversation memory block (`[MEMORY]`) in full.
-2. Run a focused memory lookup (`memory.search`) using terms from the user request (feature names, file paths, issue IDs, and domain keywords).
-3. Produce a short "Relevant Memory" summary in the response before presenting the plan.
-4. If no relevant memory is found, explicitly state "No relevant memory found" and proceed with planning.
+### Setup
+- Install dependencies: `bundle install`
+- Migrate dummy app DB: `bundle exec rake db:migrate`
+- Generate YARD docs: `bundle exec yard`
+- Generate RDoc docs: `bundle exec rake rdoc`
 
-Planning must not start until this sequence is completed.
+### Tests (RSpec)
+- Run all tests: `bundle exec rspec`
+- Run a single file: `bundle exec rspec spec/models/concerns/broadcast_hub/broadcaster_spec.rb`
+- Run a single test by line: `bundle exec rspec spec/models/concerns/broadcast_hub/broadcaster_spec.rb:45`
+- Run by example name: `bundle exec rspec spec/services/broadcast_hub/payload_builder_spec.rb -e "dispatch"`
+- Run controller helper tests: `bundle exec rspec spec/controllers/broadcast_hub/controller_helpers_spec.rb`
+- Run JS controller tests: `bundle exec rspec spec/javascripts/broadcast_hub/jquery_controller_spec.rb`
+- Run integration dispatch flow: `bundle exec rspec spec/integration/broadcast_hub/dispatch_flow_spec.rb`
+- Fail fast: `bundle exec rspec --fail-fast`
 
----
+### Linting / Formatting
+- Lint all Ruby: `bundle exec rubocop`
+- Auto-correct safe issues: `bundle exec rubocop -a`
+- Run layout cops only: `bundle exec rubocop -x`
 
-## 1. Commands & Environment
+## 2. Repository Layout
+- `app/channels/broadcast_hub/`: Action Cable channel logic.
+- `app/controllers/concerns/broadcast_hub/`: controller concerns.
+- `app/helpers/broadcast_hub/`: helper modules (including `dom_id` helper).
+- `app/models/concerns/broadcast_hub/`: model concerns.
+- `app/services/broadcast_hub/`: service objects and payload/stream utilities.
+- `app/javascripts/broadcast_hub/`: Sprockets + jQuery runtime files.
+- `lib/broadcast_hub/`: engine boot/config/version and entrypoint requires.
+- `spec/`: unit/controller/channel/integration/javascript specs.
+- `spec/dummy/`: dummy Rails app for integration/controller behavior.
 
-BroadcastHub is a Ruby on Rails engine gem. Commands are executed from the repository root.
+## 3. Ruby Code Style
+Style source: `.rubocop.yml` with `rubocop-rails-omakase`.
 
-### Setup & Dependencies
+### File and Namespace Rules
+- Every Ruby file must begin with `# frozen_string_literal: true`.
+- Keep code under `BroadcastHub` namespace.
+- Keep path-to-constant alignment (example: `app/services/broadcast_hub/payload_builder.rb` -> `BroadcastHub::PayloadBuilder`).
+- Keep classes/modules focused on one responsibility.
 
-- **Install gems**: `bundle install`
-- **Database (Dummy App)**: `bundle exec rake db:migrate` (Runs in context of `spec/dummy`)
-- **Generate documentation**: `bundle exec yard`
+### Imports and Formatting
+- Put `require` lines at top of file, after frozen string comment.
+- Use `require "..."` with double quotes for consistency.
+- Use 2-space indentation.
+- Prefer guard clauses for validation and early returns.
+- Use frozen constants (`.freeze`) for action/key lists and stable schemas.
 
-### Testing (RSpec)
-
-- **Run all tests**: `bundle exec rspec`
-- **Run single file**: `bundle exec rspec spec/models/concerns/broadcast_hub/broadcaster_spec.rb`
-- **Run specific line**: `bundle exec rspec spec/models/concerns/broadcast_hub/broadcaster_spec.rb:45`
-- **Run JavaScript controller specs**: `bundle exec rspec spec/javascripts/broadcast_hub/jquery_controller_spec.rb`
-- **Run integration dispatch flow**: `bundle exec rspec spec/integration/broadcast_hub/dispatch_flow_spec.rb`
-- **Run controller helper specs**: `bundle exec rspec spec/controllers/broadcast_hub/controller_helpers_spec.rb`
-- **Fail fast**: `bundle exec rspec --fail-fast`
-
-### Linting & Formatting (RuboCop)
-
-- **Check all**: `bundle exec rubocop`
-- **Auto-correct**: `bundle exec rubocop -a`
-- **Layout only**: `bundle exec rubocop -x`
-
----
-
-## 2. Ruby Code Style
-
-BroadcastHub follows the **RuboCop Rails Omakase** house style.
-
-### General Rules
-
-- **Frozen String Literals**: EVERY Ruby file must start with `# frozen_string_literal: true`.
-- **Namespacing**: All code must reside within the `BroadcastHub` module/namespace.
-- **Documentation**: Use YARD-style tags (`@param`, `@return`, `@yield`) for public methods and service classes.
-- **Naming**:
-  - Modules/Classes: `PascalCase` (e.g., `PayloadBuilder`)
-  - Methods/Variables: `snake_case` (e.g., `render_broadcast_content`)
-- **Concerns**:
-  - Located in `app/models/concerns/broadcast_hub/`.
-  - Use `extend ActiveSupport::Concern`.
-  - Wrap class-level macros in `class_methods` blocks.
+### Types, Naming, and Docs
+- Ruby is dynamic; express expected input/output via YARD on public APIs.
+- Use YARD tags like `@param`, `@return`, `@raise` where contract matters.
+- Classes/modules: `PascalCase`.
+- Methods/locals/keywords: `snake_case`.
+- Predicates end in `?`; strict/raising methods may use `!`.
 
 ### Error Handling
+- Use domain-specific errors within owning class/module (`< StandardError`).
+- Use `ArgumentError` for invalid API inputs.
+- Rescue narrowly; avoid broad blanket rescue unless intentionally normalizing framework edge-cases.
+- If using `rescue StandardError`, re-raise unexpected errors.
 
-- Inherit from `StandardError` for domain-specific exceptions.
-- Define internal error classes inside the relevant module/class (e.g., `BroadcastHub::PayloadBuilder::ValidationError`).
+## 4. JavaScript Code Style (Sprockets + jQuery)
+Code lives in `app/javascripts/broadcast_hub/`.
 
-### Directory Structure
+### Syntax and Compatibility
+- Use ES6 classes/modules compatible with Rails 5/6 Sprockets + Uglifier pipelines.
+- Prefer `const`/`let`, not `var`.
+- Keep semicolon usage consistent.
 
-- `app/channels/`: Action Cable channel logic.
-- `app/services/`: Stateless logic and business rules.
-- `app/models/concerns/`: Reusable model behaviors.
-- `app/controllers/concerns/`: Reusable controller behaviors (for example `BroadcastHub::ControllerHelpers`).
-- `lib/broadcast_hub/`: Engine core configuration and versioning.
+### Imports/Exports and Naming
+- Use relative imports (`./subscription`, `./jquery_controller`).
+- Default-export one primary class per module.
+- Keep global attachment logic in `index.js`.
+- Classes: `PascalCase`; methods/variables: `camelCase`.
+- Internal/private methods should be prefixed with `_`.
 
----
+### Validation and Errors
+- Validate payload/resource input before side effects.
+- Throw `Error` for direct API misuse (e.g., missing `resource`).
+- In DOM controller, prefer safe no-op + dev warning when payload is invalid.
 
-## 3. JavaScript Code Style (Sprockets)
+## 5. Core Architecture Contracts
 
-Frontend assets live in `app/javascripts/broadcast_hub/` and are intended for use with **Sprockets** and **jQuery**.
+### Payload Contract
+`BroadcastHub::PayloadBuilder` is the source of truth for broadcast payload shape.
+- Base fields: `version`, `action`, `target`, `content`, `id`, `meta`.
+- Dispatch-only fields: `event_name`, `event_data`.
+- `action` must be one of `append|prepend|update|remove|dispatch`.
+- `content` required for `append|prepend|update`.
+- `content` must be `nil` for `remove|dispatch`.
+- `event_name` required for `dispatch`.
+- `event_data` must be a hash when present.
 
-### Naming & Structure
+### Streaming and Authorization
+- Resolve stream keys through configured resolver (`BroadcastHub.configuration.stream_key_resolver`).
+- Enforce `authorize_scope` before channel subscription.
 
-- **Naming**:
-  - Classes: `PascalCase` (e.g., `BroadcastHubSubscription`)
-  - Methods/Variables: `camelCase` (e.g., `_handleReceived`)
-- **Privacy**: Prefix internal/private methods with an underscore (`_`).
-- **ES6 Compatibility**: Use ES6 classes, but avoid syntax that requires modern browser polyfills or breaks `uglifier` (Sprockets default). Prefer `export default class` for main modules.
-
-### Integration
-
-- Maintain compatibility with `jQuery`.
-- Use the `BroadcastHubJQueryController` for DOM manipulations.
-
----
-
-## 4. Architectural Patterns & Contracts
-
-### Payload Contract (Broadcasting)
-
-All payloads sent over `BroadcastHub::StreamChannel` must follow the contract enforced by `BroadcastHub::PayloadBuilder`:
-
-```json
-{
-  "version": 1,
-  "action": "append|prepend|update|remove|dispatch",
-  "target": "#dom-target-selector",
-  "content": "rendered-html-string or null",
-  "id": "dom_element_id_123",
-  "meta": {},
-  "event_name": "custom:event:name",
-  "event_data": {}
-}
-```
-
-Notes:
-- `event_name` and `event_data` are **dispatch-only** fields.
-- For `append|prepend|update`, `content` is required.
-- For `remove|dispatch`, `content` is `null`.
-
-### Action Cable Streaming
-
-- **Stream Key Resolution**: Always use the configured `stream_key_resolver` via `BroadcastHub.configuration`.
-- **Authorization**: Subscription logic must check `authorize_scope` before establishing streams.
-
-### Controller Helper (`render_broadcast`)
-
+### Controller Helper Contract
 - Use `render_broadcast` for controller-triggered broadcast actions.
-- Always provide `action`, `target`, and `resource`.
+- Required args: `action`, `target`, `resource`.
 - For `append|prepend|update`, `partial` is required.
-- For `remove|dispatch`, `content` must remain `nil`.
-- Keep controller response format contracts explicit (e.g. `respond_to` with supported formats only).
+- For `remove|dispatch`, `content` stays `nil`.
+- Keep controller response formats explicit (`respond_to` only for supported formats).
 
-### Testing Strategy
+### Dom ID Helper Contract
+- Public API: `dom_id(record, positional_prefix = nil, prefix: nil, suffix: nil)`.
+- Preserve Rails positional prefix behavior (`dom_id(todo, :edit)` -> `edit_todo_1`).
+- Keyword wrappers compose around base id (`prefix` before, `suffix` after).
+- If positional prefix and keyword `prefix` are both given, raise `ArgumentError`.
 
-- **Factories**: Define in `spec/factories/` using `FactoryBot`.
-- **Dummy App**: Integration and controller tests target the app in `spec/dummy/`.
-- **Context**: Use `BroadcastHub::StreamKeyContext` for consistent stream key resolution tests.
-- **Backend contract tests**: Keep `PayloadBuilder` and `Broadcaster` specs updated when payload schema/actions change.
-- **Frontend behavior tests**: Validate `BroadcastHubJQueryController` behavior in `spec/javascripts/` (using `ExecJS` + jQuery stub patterns present in the repository).
+## 6. Testing and Change Expectations
+- Keep factories under `spec/factories/`.
+- Update affected tests in same change as behavior changes.
+- Keep payload/broadcaster/JS controller contract tests aligned.
+- Prefer targeted test runs first; run full suite before final completion when feasible.
+- Update README/YARD when public API or behavior changes.
 
----
+## 7. Cursor/Copilot Rules Status
+Repository scan result:
+- `.cursor/rules/`: not present
+- `.cursorrules`: not present
+- `.github/copilot-instructions.md`: not present
+If these files are added later, treat them as mandatory additional instructions.
 
-## 5. Verification Checklist
-
-Before considering a task complete:
-
-1. **Linting**: Run `bundle exec rubocop` and ensure zero offenses.
-2. **Tests**: Run `bundle exec rspec` and ensure all tests pass.
-3. **Ruby Idioms**: Verify the presence of `# frozen_string_literal: true`.
-4. **Documentation**: Update README.md or YARD comments if public APIs changed.
-5. **Contract**: If modifying broadcasting logic, ensure payload semantics stay aligned across `PayloadBuilder`, `Broadcaster`, `BroadcastHubJQueryController`, and README examples.
-6. **Pre-existing issues**: If unrelated, pre-existing lint/test failures exist, do not hide them in feature changes; report them explicitly.
+## 8. Completion Checklist
+Before marking work complete:
+1. Run `bundle exec rubocop` (or report pre-existing unrelated offenses).
+2. Run relevant focused specs, then `bundle exec rspec` when feasible.
+3. Verify `# frozen_string_literal: true` in changed Ruby files.
+4. Verify contracts remain aligned across payload builder, broadcaster, controller helper, JS controller, and README.
+5. Report unrelated pre-existing test/lint failures explicitly.
