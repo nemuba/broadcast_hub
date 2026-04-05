@@ -38,6 +38,9 @@ export default class BroadcastHubJQueryController {
           $target.html(content);
         }
         return;
+      case 'replace':
+        $target.replaceWith(content);
+        return;
       case 'remove':
         if (id) {
           const $withinTarget = $target.filter(`#${id}`).add($target.find(`#${id}`)).first();
@@ -59,7 +62,7 @@ export default class BroadcastHubJQueryController {
       return false;
     }
 
-    if ((action === 'append' || action === 'prepend' || action === 'update') && isBlank(content)) {
+    if ((action === 'append' || action === 'prepend' || action === 'update' || action === 'replace') && isBlank(content)) {
       return false;
     }
 

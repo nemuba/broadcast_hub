@@ -6,7 +6,7 @@ module BroadcastHub
   module ControllerHelpers
     extend ActiveSupport::Concern
 
-    ACTIONS_REQUIRING_CONTENT = %w[append prepend update].freeze
+    ACTIONS_REQUIRING_CONTENT = %w[append prepend update replace].freeze
     ACTIONS_WITHOUT_CONTENT = %w[remove dispatch].freeze
 
     def render_broadcast(action:, target:, resource:, partial: nil, locals: {}, id: nil, meta: {}, event_name: nil, event_data: {}, status: :ok)

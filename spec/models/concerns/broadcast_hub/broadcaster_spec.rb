@@ -87,6 +87,7 @@ RSpec.describe BroadcastHub::Broadcaster, type: :model do
     include_examples "non-dispatch content action", :broadcast_append, "append"
     include_examples "non-dispatch content action", :broadcast_prepend, "prepend"
     include_examples "non-dispatch content action", :broadcast_update, "update"
+    include_examples "non-dispatch content action", :broadcast_replace, "replace"
 
     it "broadcast_remove keeps nil content" do
       expect(todo).not_to receive(:render_broadcast_content)

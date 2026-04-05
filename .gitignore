@@ -2,3 +2,18 @@
 
 /spec/dummy/public/assets
 /spec/dummy/tmp
+
+# Ruby / Rails essentials
+/.bundle/
+/vendor/bundle/
+/tmp/
+/log/
+*.gem
+
+# Editor / OS noise
+.DS_Store
+Thumbs.db
+*.swp
+*.tmp
+.idea/
+.vscode/

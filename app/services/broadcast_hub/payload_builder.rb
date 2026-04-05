@@ -6,8 +6,8 @@ module BroadcastHub
     # Raised when payload data is invalid.
     class ValidationError < StandardError; end
 
-    VALID_ACTIONS = %w[append prepend update remove dispatch].freeze
-    ACTIONS_REQUIRING_CONTENT = %w[append prepend update].freeze
+    VALID_ACTIONS = %w[append prepend update replace remove dispatch].freeze
+    ACTIONS_REQUIRING_CONTENT = %w[append prepend update replace].freeze
     ALLOWED_KEYS = %i[version action target content id meta event_name event_data].freeze
 
     class << self

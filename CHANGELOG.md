@@ -4,6 +4,24 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- New `replace` broadcast action for full target-element replacement in one operation.
+- Model helper `broadcast_replace(target)` for emitting replace payloads from broadcaster concerns.
+- Channel non-regression coverage ensuring authorization and scope behavior remains unchanged for replace-context subscriptions.
+
+### Changed
+
+- Payload contract now accepts `replace` as a valid action and requires `content` for `append|prepend|update|replace`.
+- Controller helper content-required action set now includes `replace`.
+- jQuery runtimes (app and vendored asset) now apply `replace` via deterministic target replacement and validate replace content.
+- README payload contract documentation now includes `replace` semantics.
+
+### Tests
+
+- Added/expanded specs for replace behavior across payload builder, controller helper, broadcaster concern, integration flow, and JS runtimes.
+- Added explicit runtime safety coverage for edge cases: missing target no-op and `id`/`target` mismatch.
+
 ## [0.2.2] - 2026-03-29
 
 ### Added

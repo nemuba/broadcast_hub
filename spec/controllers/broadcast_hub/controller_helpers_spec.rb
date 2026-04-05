@@ -45,6 +45,16 @@ RSpec.describe BroadcastHub::ControllerHelpers, type: :controller do
       )
     end
 
+    def replace_item
+      render_broadcast(
+        action: 'replace',
+        target: '#todo_1',
+        resource: 'todo',
+        partial: 'todos/partials/todo',
+        locals: { title: 'Updated Task' }
+      )
+    end
+
     def append_without_partial
       render_broadcast(
         action: 'append',
@@ -87,6 +97,7 @@ RSpec.describe BroadcastHub::ControllerHelpers, type: :controller do
       post 'create_with_id' => 'anonymous#create_with_id'
       post 'invalid_create' => 'anonymous#invalid_create'
       post 'remove_item' => 'anonymous#remove_item'
+      post 'replace_item' => 'anonymous#replace_item'
       post 'append_without_partial' => 'anonymous#append_without_partial'
       post 'dispatch_blank_event_name' => 'anonymous#dispatch_blank_event_name'
       post 'invalid_action' => 'anonymous#invalid_action'
@@ -173,6 +184,35 @@ RSpec.describe BroadcastHub::ControllerHelpers, type: :controller do
     expect do
       post :append_without_partial
     end.to raise_error(ArgumentError, 'partial required for append')
+  end
+
+  it 'renders content for replace and broadcasts replace payload' do
+    rendered_content = '<li>Updated Task</li>'
+    stream_key = 'resource:todo:user:1'
+    payload = { action: 'replace', target: '#todo_1', content: rendered_content, id: 'uuid-replace', meta: {} }
+    context = instance_double(BroadcastHub::StreamKeyContext)
+    renderer = instance_double(BroadcastHub::Renderer)
+
+    allow(SecureRandom).to receive(:uuid).and_return('uuid-replace')
+    expect(BroadcastHub::Renderer).to receive(:new).with(renderer: controller).and_return(renderer)
+    expect(renderer).to receive(:render).with(partial: 'todos/partials/todo', locals: { title: 'Updated Task' }).and_return(rendered_content)
+    allow(BroadcastHub::StreamKeyContext).to receive(:new).and_return(context)
+    allow(BroadcastHub::StreamKeyResolver).to receive(:resolve!).with(context).and_return(stream_key)
+    expect(BroadcastHub::PayloadBuilder).to receive(:build).with(
+      action: 'replace',
+      target: '#todo_1',
+      content: rendered_content,
+      id: 'uuid-replace',
+      meta: {},
+      event_name: nil,
+      event_data: {}
+    ).and_return(payload)
+    expect(ActionCable.server).to receive(:broadcast).with(stream_key, payload)
+
+    post :replace_item
+
+    expect(response).to have_http_status(:ok)
+    expect(response.body).to be_empty
   end
 
   it 'uses provided id and does not generate a UUID' do

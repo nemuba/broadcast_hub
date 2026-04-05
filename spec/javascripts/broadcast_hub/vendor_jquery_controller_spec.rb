@@ -3,7 +3,7 @@
 require 'rails_helper'
 require 'execjs'
 
-RSpec.describe 'Vendor BroadcastHubJQueryController dispatch action' do
+RSpec.describe 'Vendor BroadcastHubJQueryController runtime actions' do
   let(:controller_source) do
     File.read(BroadcastHub::Engine.root.join('vendor/assets/javascripts/broadcast_hub/jquery_controller.js'))
   end
@@ -15,10 +15,11 @@ RSpec.describe 'Vendor BroadcastHubJQueryController dispatch action' do
 
         function buildJQueryStub() {
           var dispatchedEvents = [];
+          var replacedElements = [];
 
           function JQueryCollection(selector) {
             this.selector = selector;
-            this.length = selector ? 1 : 0;
+            this.length = selector && selector !== '#missing' ? 1 : 0;
           }
 
           JQueryCollection.prototype.trigger = function(eventName, args) {
@@ -31,11 +32,23 @@ RSpec.describe 'Vendor BroadcastHubJQueryController dispatch action' do
             return this;
           };
 
+          JQueryCollection.prototype.replaceWith = function(content) {
+            if (this.length > 0) {
+              replacedElements.push({
+                selector: this.selector,
+                content: content
+              });
+            }
+
+            return this;
+          };
+
           function $(selector) {
             return new JQueryCollection(selector);
           }
 
           $.dispatchedEvents = dispatchedEvents;
+          $.replacedElements = replacedElements;
           return $;
         }
 
@@ -43,7 +56,10 @@ RSpec.describe 'Vendor BroadcastHubJQueryController dispatch action' do
           var $ = buildJQueryStub();
           var controller = new BroadcastHubJQueryController($);
           controller.apply(payload);
-          return $.dispatchedEvents;
+          return {
+            dispatchedEvents: $.dispatchedEvents,
+            replacedElements: $.replacedElements
+          };
         }
       JS
     )
@@ -58,9 +74,9 @@ RSpec.describe 'Vendor BroadcastHubJQueryController dispatch action' do
       event_data: { todo_id: 42 }
     }
 
-    dispatched_events = runtime.eval("runController(#{payload.to_json})")
+    result = runtime.eval("runController(#{payload.to_json})")
 
-    expect(dispatched_events).to eq(
+    expect(result['dispatchedEvents']).to eq(
       [
         {
           'selector' => '#todos',
@@ -70,6 +86,28 @@ RSpec.describe 'Vendor BroadcastHubJQueryController dispatch action' do
               'todo_id' => 42
             }
           ]
+        }
+      ]
+    )
+    expect(result['replacedElements']).to eq([])
+  end
+
+  it 'replaces target element content in sprockets runtime' do
+    payload = {
+      action: 'replace',
+      target: '#todo_42',
+      content: '<li id="todo_42">Updated</li>',
+      id: 'todo_42'
+    }
+
+    result = runtime.eval("runController(#{payload.to_json})")
+
+    expect(result['dispatchedEvents']).to eq([])
+    expect(result['replacedElements']).to eq(
+      [
+        {
+          'selector' => '#todo_42',
+          'content' => '<li id="todo_42">Updated</li>'
         }
       ]
     )

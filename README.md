@@ -214,9 +214,9 @@ Dispatch actions extend this payload with event fields:
 
 Field meaning:
 
-- `action`: one of `append`, `prepend`, `update`, `remove`, `dispatch`
+- `action`: one of `append`, `prepend`, `update`, `replace`, `remove`, `dispatch`
 - `target`: CSS selector used as insertion/update/remove/dispatch target
-- `content`: rendered HTML for append/prepend/update (typically `null` on remove/dispatch)
+- `content`: rendered HTML for append/prepend/update/replace (typically `null` on remove/dispatch)
 - `id`: DOM id used by update/remove fast-path replacement
 - `meta`: optional metadata hash (defaults to `{}`)
 - `event_name`: required when `action` is `dispatch`; event name passed to jQuery `trigger`

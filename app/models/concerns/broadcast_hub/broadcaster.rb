@@ -29,6 +29,14 @@ module BroadcastHub
       broadcast_action("update", target)
     end
 
+    # Broadcasts a replace action for the model instance.
+    #
+    # @param target [String] DOM target to replace
+    # @return [void]
+    def broadcast_replace(target)
+      broadcast_action("replace", target)
+    end
+
     # Broadcasts a remove action for the model instance.
     #
     # @param target [String] DOM target to remove

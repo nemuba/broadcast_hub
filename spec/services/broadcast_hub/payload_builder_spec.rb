@@ -21,7 +21,7 @@ RSpec.describe BroadcastHub::PayloadBuilder do
     end
 
     context 'with valid basic actions' do
-      %w[append prepend update].each do |valid_action|
+      %w[append prepend update replace].each do |valid_action|
         it "builds a valid payload for #{valid_action}" do
           payload = described_class.build(
             action: valid_action,
