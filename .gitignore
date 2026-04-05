@@ -1,1 +1,4 @@
 .worktrees/
+
+/spec/dummy/public/assets
+/spec/dummy/tmp
